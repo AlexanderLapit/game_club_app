@@ -1,4 +1,5 @@
 import hashlib
+import hmac
 import os
 
 class Security:
@@ -11,8 +12,13 @@ class Security:
 
     @staticmethod
     def verify_password(stored_password: str, provided_password: str) -> bool:
+        if len(stored_password) < 32:
+            return False
         salt_hex = stored_password[:32]
-        salt = bytes.fromhex(salt_hex)
         stored_hash = stored_password[32:]
+        try:
+            salt = bytes.fromhex(salt_hex)
+        except ValueError:
+            return False
         pwd_hash = hashlib.pbkdf2_hmac('sha256', provided_password.encode(), salt, 100000).hex()
-        return pwd_hash == stored_hash
+        return hmac.compare_digest(pwd_hash, stored_hash)

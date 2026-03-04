@@ -2,8 +2,12 @@ from sqlalchemy import Column, Integer, String
 from sqlalchemy.orm import relationship
 from database.db import Base
 
+
 class AccessLevel(Base):
-    __tablename__ = 'access_levels'
+    __tablename__ = "access_levels"
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(50), unique=True)
-    users = relationship('User', back_populates='access_level')
+    name = Column(String(50), unique=True, nullable=False)
+    users = relationship("User", back_populates="access_level", cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<AccessLevel(id={self.id}, name='{self.name}')>"

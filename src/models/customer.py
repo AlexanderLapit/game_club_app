@@ -1,15 +1,18 @@
-from sqlalchemy import Column, Integer, Float, DateTime, ForeignKey, String
+from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.orm import relationship
-from datetime import datetime
 from database.db import Base
 
-class Order(Base):
-    __tablename__ = 'orders'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    customer_id = Column(Integer, ForeignKey('customers.id'), nullable=False)
-    order_date = Column(DateTime, default=datetime.utcnow)
-    total_amount = Column(Float, nullable=False, default=0.0)
-    status = Column(String(50), nullable=False, default='Новый')
+class Customer(Base):
+    __tablename__ = "customers"
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String(100), nullable=False)
+    inn = Column(String(12), unique=True)
+    address = Column(String(200))
+    phone = Column(String(20))
+    is_buyer = Column(Boolean, default=False)
+    is_salesman = Column(Boolean, default=False)
+    orders = relationship("Order", back_populates="customer", cascade="all, delete-orphan")
 
-    customer = relationship("Customer", backref="orders")
+    def __repr__(self):
+        return f"<Customer(id={self.id}, name='{self.name}', inn='{self.inn}')>"

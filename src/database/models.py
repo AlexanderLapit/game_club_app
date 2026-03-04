@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
-from database.db import Base  # ✅ Правильно
-
+from database.db import Base
 class AccessLevel(Base):
     __tablename__ = 'access_levels'
     id = Column(Integer, primary_key=True, index=True)
