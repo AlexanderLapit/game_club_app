@@ -1,5 +1,5 @@
 from PyQt6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel, QHBoxLayout
+    QMainWindow, QWidget, QVBoxLayout, QPushButton, QLabel
 )
 from PyQt6.QtCore import Qt
 
@@ -14,35 +14,15 @@ class MainWindow(QMainWindow):
         self.setup_ui()
 
     def setup_ui(self):
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #f9f5eb;
-            }
-            QLabel {
-                color: #4b3c27;
-                font-size: 14px;
-            }
-            QPushButton {
-                background-color: #d4c8a5;
-                color: #4b3c27;
-                border: 1px solid #c0b490;
-                padding: 15px;
-                border-radius: 8px;
-                font-size: 14px;
-                font-weight: 500;
-            }
-            QPushButton:hover {
-                background-color: #e5d8b5;
-            }
-        """)
-
         central_widget = QWidget()
         layout = QVBoxLayout()
         layout.setSpacing(20)
         layout.setContentsMargins(40, 40, 40, 40)
 
-        self.label = QLabel(f"Добро пожаловать, <b>{self.current_user.username}</b><br>"
-                            f"<span style='color:#7a6c4f;'>Уровень доступа: {self.current_user.access_level.name}</span>")
+        self.label = QLabel(
+            f"Добро пожаловать, <b>{self.current_user.username}</b><br>"
+            f"<span style='color:#7a6c4f;'>Уровень доступа: {self.current_user.access_level.name}</span>"
+        )
         self.label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.label.setStyleSheet("font-size: 18px; margin-bottom: 30px;")
         layout.addWidget(self.label)
@@ -50,33 +30,59 @@ class MainWindow(QMainWindow):
         button_container = QVBoxLayout()
         button_container.setSpacing(15)
 
-        self.btn_order = QPushButton("➕ Создать заказ")
+        # ❌ Убрана кнопка "Создать заказ"
+        # Вместо этого — только управление заказами
+
+        self.btn_order_mgmt = QPushButton("📋 Управление заказами")
+        self.btn_order_mgmt.clicked.connect(self.open_order_management)
+
+        self.btn_customer_mgmt = QPushButton("📞 Управление клиентами")
+        self.btn_customer_mgmt.clicked.connect(self.open_customer_management)
+
         self.btn_user_mgmt = QPushButton("👥 Управление пользователями")
+        if self.current_user.access_level.name != "Администратор":
+            self.btn_user_mgmt.setEnabled(False)
+            self.btn_user_mgmt.setToolTip("Доступно только администратору")
+        else:
+            self.btn_user_mgmt.clicked.connect(self.open_user_management)
+
+        self.btn_product_mgmt = QPushButton("📦 Управление товарами")
+        self.btn_product_mgmt.clicked.connect(self.open_product_management)
+
         self.btn_logout = QPushButton("🚪 Выйти")
+        self.btn_logout.clicked.connect(self.handle_logout)
 
-        button_container.addWidget(self.btn_order)
+        button_container.addWidget(self.btn_order_mgmt)
+        button_container.addWidget(self.btn_customer_mgmt)
         button_container.addWidget(self.btn_user_mgmt)
+        button_container.addWidget(self.btn_product_mgmt)
         button_container.addWidget(self.btn_logout)
-
         layout.addLayout(button_container)
         layout.addStretch()
 
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
 
-        self.btn_order.clicked.connect(self.open_order_form)
-        self.btn_user_mgmt.clicked.connect(self.open_user_management)
-        self.btn_logout.clicked.connect(self.handle_logout)
+    def open_order_management(self):
+        """Открыть управление заказами (включая создание, редактирование, удаление)."""
+        from .order_management import OrderManagement
+        self.order_mgmt = OrderManagement()
+        self.order_mgmt.show()
 
-    def open_order_form(self):
-        from views.order_form import OrderForm
-        self.order_form = OrderForm()
-        self.order_form.show()
+    def open_customer_management(self):
+        from .customer_management import CustomerManagement
+        self.customer_mgmt = CustomerManagement()
+        self.customer_mgmt.show()
 
     def open_user_management(self):
-        from views.user_management import UserManagement
-        self.user_mgmt = UserManagement()
+        from .user_management import UserManagement
+        self.user_mgmt = UserManagement(current_user=self.current_user)
         self.user_mgmt.show()
+
+    def open_product_management(self):
+        from .product_management import ProductManagement
+        self.product_mgmt = ProductManagement()
+        self.product_mgmt.show()
 
     def handle_logout(self):
         if self.on_logout:

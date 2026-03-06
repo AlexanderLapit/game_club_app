@@ -1,6 +1,4 @@
-from PyQt6.QtWidgets import QMessageBox
 from datetime import datetime, timedelta
-from .security import Security
 
 
 class AuthController:
@@ -29,24 +27,23 @@ class AuthController:
         self.failed_attempts[username] = (now, count)
 
     def login(self, username, password):
-        if self.is_locked(username):
-            QMessageBox.warning(None, "Заблокировано", "Слишком много попыток. Подождите.")
-            return False
+        try:
+            if self.is_locked(username):
+                return False, "Слишком много попыток. Подождите."
 
-        if not self.captcha_service.verify():
-            QMessageBox.warning(None, "Капча", "Пройдите проверку капчи")
-            return False
+            if not self.captcha_service.verify():
+                return False, "Пройдите проверку капчи."
 
-        user = self.user_service.get_user(username)
-        if not user:
-            self.increment_attempts(username)
-            QMessageBox.warning(None, "Ошибка", "Неверный логин или пароль")
-            return False
+            user = self.user_service.get_user(username)
+            if not user:
+                self.increment_attempts(username)
+                return False, "Неверный логин или пароль."
 
-        if Security.verify_password(user.password, password):
-            self.reset_attempts(username)
-            return True
-        else:
-            self.increment_attempts(username)
-            QMessageBox.warning(None, "Ошибка", "Неверный пароль")
-            return False
+            if user.is_active and self.user_service.security.verify_password(user.password, password):
+                self.reset_attempts(username)
+                return True, "Успешный вход."
+            else:
+                self.increment_attempts(username)
+                return False, "Неверный пароль или аккаунт заблокирован."
+        except Exception as e:
+            return False, f"Ошибка системы: {str(e)}"

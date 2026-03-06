@@ -1,11 +1,15 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QPushButton, QTableWidget, QTableWidgetItem,
-    QHBoxLayout, QSpinBox, QDoubleSpinBox, QLineEdit, QMessageBox
+    QHBoxLayout, QSpinBox, QDoubleSpinBox, QLineEdit, QMessageBox, QFormLayout
 )
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, pyqtSignal
+from controllers.order_controller import OrderController
 
 
 class OrderForm(QWidget):
+    # Добавляем сигнал
+    saved = pyqtSignal()
+
     def __init__(self):
         super().__init__()
         self.setWindowTitle("📦 Создание заказа")
@@ -15,58 +19,27 @@ class OrderForm(QWidget):
         self.connect_signals()
 
     def setup_ui(self):
-        self.setStyleSheet("""
-            QWidget {
-                background-color: #f9f5eb;
-                font-family: "Segoe UI";
-            }
-            QLabel {
-                color: #4b3c27;
-            }
-            QTableWidget {
-                background-color: white;
-                gridline-color: #e8e0d0;
-                border-radius: 8px;
-            }
-            QHeaderView::section {
-                background-color: #e8e0d0;
-                color: #4b3c27;
-                padding: 6px;
-                font-weight: bold;
-            }
-            QPushButton {
-                background-color: #d4c8a5;
-                color: #4b3c27;
-                border: none;
-                padding: 6px 12px;
-                border-radius: 6px;
-            }
-            QPushButton#delete_btn {
-                background-color: #e5b8b7;
-                color: #5e2c24;
-            }
-            QPushButton#delete_btn:hover {
-                background-color: #ffcccc;
-            }
-            QLineEdit, QSpinBox, QDoubleSpinBox {
-                background-color: white;
-                border: 1px solid #d0c4a8;
-                border-radius: 6px;
-                padding: 4px;
-            }
-        """)
-
         layout = QVBoxLayout()
         title = QLabel("Форма создания заказа")
         title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         title.setStyleSheet("font-size: 16px; font-weight: bold; margin: 10px;")
         layout.addWidget(title)
 
+        # Поле для ID клиента
+        self.customer_id_input = QLineEdit()
+        self.customer_id_input.setPlaceholderText("Введите ID клиента")
+
+        form_layout = QFormLayout()
+        form_layout.addRow("ID клиента:", self.customer_id_input)
+        layout.addLayout(form_layout)
+
+        # Таблица товаров
         self.table = QTableWidget(0, 5)
         self.table.setHorizontalHeaderLabels(["Товар", "Кол-во", "Цена", "ИТОГО", ""])
         self.table.horizontalHeader().setStretchLastSection(True)
         layout.addWidget(self.table)
 
+        # Кнопки
         self.btn_add = QPushButton("+ Добавить товар")
         self.btn_save = QPushButton("✅ Сохранить заказ")
         self.btn_cancel = QPushButton("❌ Отмена")
@@ -117,17 +90,21 @@ class OrderForm(QWidget):
         self.update_row_total(row)
 
     def update_row_total(self, row):
-        qty = self.table.cellWidget(row, 1).value()
-        price = self.table.cellWidget(row, 2).value()
-        total = qty * price
-        self.table.cellWidget(row, 3).setText(f"{total:.2f}")
-        self.update_grand_total()
+        qty_w = self.table.cellWidget(row, 1)
+        price_w = self.table.cellWidget(row, 2)
+        if qty_w and price_w:
+            qty = qty_w.value()
+            price = price_w.value()
+            total = qty * price
+            self.table.cellWidget(row, 3).setText(f"{total:.2f}")
+            self.update_grand_total()
 
     def update_grand_total(self):
-        total = sum(
-            float(self.table.cellWidget(row, 3).text())
-            for row in range(self.table.rowCount())
-        )
+        total = 0.0
+        for row in range(self.table.rowCount()):
+            total_w = self.table.cellWidget(row, 3)
+            if total_w:
+                total += float(total_w.text())
         self.total_label.setText(f"Общая сумма: {total:.2f} руб")
 
     def remove_row(self, row):
@@ -135,12 +112,19 @@ class OrderForm(QWidget):
         self.update_grand_total()
 
     def save_order(self):
+        customer_id_text = self.customer_id_input.text().strip()
+        if not customer_id_text.isdigit():
+            QMessageBox.warning(self, "⚠️ Ошибка", "Введите корректный ID клиента")
+            return
+
+        customer_id = int(customer_id_text)
+
         items = []
         for row in range(self.table.rowCount()):
             name_w = self.table.cellWidget(row, 0)
             qty_w = self.table.cellWidget(row, 1)
             price_w = self.table.cellWidget(row, 2)
-            if name_w.text().strip():
+            if name_w and name_w.text().strip():
                 items.append({
                     'name': name_w.text(),
                     'quantity': qty_w.value(),
@@ -151,9 +135,19 @@ class OrderForm(QWidget):
             QMessageBox.warning(self, "⚠️ Ошибка", "Добавьте хотя бы один товар")
             return
 
-        total = sum(i['quantity'] * i['price'] for i in items)
-        QMessageBox.information(
-            self, "✅ Успех",
-            f"Заказ на сумму {total:.2f} руб успешно создан!"
-        )
-        self.close()
+        try:
+            controller = OrderController()
+            order = controller.create_order(customer_id=customer_id, items=items)
+            QMessageBox.information(
+                self, "✅ Успех",
+                f"Заказ №{order.id} на сумму {order.total_amount:.2f} руб успешно создан!"
+            )
+            self.saved.emit()  # Сигнал: заказ сохранён
+            self.close()
+        except Exception as e:
+            QMessageBox.critical(self, "❌ Ошибка", f"Не удалось сохранить заказ:\n{str(e)}")
+        finally:
+            try:
+                controller.close()
+            except:
+                pass  # На случай, если контроллер не был создан

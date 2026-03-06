@@ -1,13 +1,15 @@
-from database import SessionLocal
-from models import Order, User
+from database.db import SessionLocal
+from models import Order, Customer
 
 
 class OrderController:
     def __init__(self, session=None):
         self.db_session = session or SessionLocal()
+        self.model = Order  # ✅ Добавляем модель, чтобы использовать controller.model
 
     def create_order(self, customer_id, items):
-        customer = self.db_session.query(User).get(customer_id)
+        """Создаёт новый заказ."""
+        customer = self.db_session.query(Customer).get(customer_id)
         if not customer:
             raise ValueError("Клиент не найден")
 
@@ -21,10 +23,13 @@ class OrderController:
         return order
 
     def get_orders(self):
-        return self.db_session.query(Order).all()
+        """Возвращает все заказы."""
+        return self.db_session.query(self.model).all()
 
     def close(self):
-        self.db_session.close()
+        """Закрывает сессию."""
+        if self.db_session:
+            self.db_session.close()
 
     def __del__(self):
         self.close()

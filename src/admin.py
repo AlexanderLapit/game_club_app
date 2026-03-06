@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import OperationalError
 from models import AccessLevel, User
 
-from controllers.security import Security
+from src.utils.security import Security
 
 DATABASE_URL = "postgresql://postgres:12345@localhost:5432/game_club"
 engine = create_engine(DATABASE_URL)

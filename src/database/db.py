@@ -14,11 +14,11 @@ engine = create_engine(DATABASE_URL, pool_pre_ping=True)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
+
 def init_db():
-    from models.access_levels import AccessLevel
     from models.user import User
+    from models.access_levels import AccessLevel
     from models.customer import Customer
-    from models.product import Product
-    from models.material import Material
     from models.order import Order
+
     Base.metadata.create_all(bind=engine)

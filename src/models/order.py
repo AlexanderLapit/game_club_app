@@ -11,7 +11,5 @@ class Order(Base):
     order_date = Column(DateTime, default=datetime.utcnow)
     total_amount = Column(Numeric(precision=12, scale=2), nullable=False)
     status = Column(String(50), nullable=False, default="Новый")
-    customer = relationship("Customer", back_populates="orders")
 
-    def __repr__(self):
-        return f"<Order(id={self.id}, customer_id={self.customer_id}, total={self.total_amount}, status='{self.status}')>"
+    customer = relationship("Customer", back_populates="orders")

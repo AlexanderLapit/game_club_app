@@ -1,26 +1,22 @@
 from PyQt6.QtWidgets import QApplication
-from views import MainWindow, LoginForm
+from views.login_form import LoginForm
+from views.main_window import MainWindow
 from utils.logger import log_action
-from .auth_controller import AuthController
-from .user_controller import UserController
 
 
 class MainController:
-    def __init__(self, user_service=None, captcha_service=None):
-        self.app = QApplication([])
-        self.user_service = user_service or UserController()
-        self.captcha_service = captcha_service
+    def __init__(self, auth_controller):
+        self.app = QApplication.instance() or QApplication([])
+        self.auth_controller = auth_controller
         self.main_window = None
         self.current_user = None
 
     def run(self):
         self.show_login()
-        self.app.exec()
 
     def show_login(self):
-        auth_controller = AuthController(self.user_service, self.captcha_service)
         self.login_form = LoginForm(
-            auth_controller=auth_controller,
+            auth_controller=self.auth_controller,
             on_success=self.on_login_success
         )
         self.login_form.show()
@@ -38,7 +34,6 @@ class MainController:
     def logout(self):
         if self.main_window:
             self.main_window.close()
-            self.main_window = None
         if self.current_user:
             log_action(self.current_user.username, "Выход из системы")
         self.current_user = None

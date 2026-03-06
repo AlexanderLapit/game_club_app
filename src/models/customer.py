@@ -7,12 +7,10 @@ class Customer(Base):
     __tablename__ = "customers"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String(100), nullable=False)
-    inn = Column(String(12), unique=True)
-    address = Column(String(200))
-    phone = Column(String(20))
+    inn = Column(String(12), unique=True, nullable=False)
+    address = Column(String(200), nullable=False)
+    phone = Column(String(20), nullable=False)
     is_buyer = Column(Boolean, default=False)
     is_salesman = Column(Boolean, default=False)
-    orders = relationship("Order", back_populates="customer", cascade="all, delete-orphan")
 
-    def __repr__(self):
-        return f"<Customer(id={self.id}, name='{self.name}', inn='{self.inn}')>"
+    orders = relationship("Order", back_populates="customer", cascade="all, delete-orphan")
