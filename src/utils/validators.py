@@ -28,6 +28,25 @@ def is_valid_customer_data(name, inn, address, phone):
         validate_phone(phone)
     ])
 
+def validate_full_name(full_name):
+    """
+    Проверяет ФИО на:
+    1. Наличие только кириллических букв, пробелов, дефисов и амперсанда (&)
+    2. Отсутствие цифр и специальных символов (!, @, # и т.д.)
+
+    :param full_name: str
+    :return: list of str — список ошибок
+    """
+    errors = []
+
+    allowed_pattern = r'^[А-Яа-яЁё&\-\s]+$'
+    if not re.match(allowed_pattern, full_name):
+        errors.append("Недопустимые символы: разрешены только кириллица, &, пробел, дефис")
+
+    if re.search(r'\d', full_name):
+        errors.append("ФИО содержит цифры")
+
+    return errors
 
 def validate_username(username):
     import re
