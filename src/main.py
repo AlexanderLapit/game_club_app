@@ -12,7 +12,6 @@ from controllers.main_controller import MainController
 def main():
     app = QApplication(sys.argv)
 
-    # Применяем стили
     css_file = os.path.join(os.path.dirname(__file__), "styles.css")
     if os.path.exists(css_file):
         try:
@@ -21,14 +20,12 @@ def main():
         except Exception as e:
             print(f"Не удалось загрузить CSS: {e}")
 
-    # Создание таблиц
     try:
         Base.metadata.create_all(bind=engine)
     except Exception as e:
         QMessageBox.critical(None, "❌ Ошибка базы данных", f"Не удалось создать таблицы:\n{str(e)}")
         sys.exit(1)
 
-    # Вставка начальных уровней доступа
     uc = UserController()
     try:
         if not uc.get_access_level("Администратор"):
@@ -45,7 +42,6 @@ def main():
     finally:
         uc.close()
 
-    # Создание сервисов
     try:
         user_service = UserController()
         captcha_service = Captcha()
@@ -54,7 +50,6 @@ def main():
         QMessageBox.critical(None, "❌ Ошибка", f"Не удалось инициализировать сервисы:\n{str(e)}")
         sys.exit(1)
 
-    # Запуск приложения
     try:
         main_controller = MainController(auth_controller=auth_controller)
         main_controller.run()

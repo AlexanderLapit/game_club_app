@@ -7,7 +7,6 @@ from controllers.order_controller import OrderController
 
 
 class OrderForm(QWidget):
-    # Добавляем сигнал
     saved = pyqtSignal()
 
     def __init__(self):
@@ -25,7 +24,6 @@ class OrderForm(QWidget):
         title.setStyleSheet("font-size: 16px; font-weight: bold; margin: 10px;")
         layout.addWidget(title)
 
-        # Поле для ID клиента
         self.customer_id_input = QLineEdit()
         self.customer_id_input.setPlaceholderText("Введите ID клиента")
 
@@ -33,13 +31,11 @@ class OrderForm(QWidget):
         form_layout.addRow("ID клиента:", self.customer_id_input)
         layout.addLayout(form_layout)
 
-        # Таблица товаров
         self.table = QTableWidget(0, 5)
         self.table.setHorizontalHeaderLabels(["Товар", "Кол-во", "Цена", "ИТОГО", ""])
         self.table.horizontalHeader().setStretchLastSection(True)
         layout.addWidget(self.table)
 
-        # Кнопки
         self.btn_add = QPushButton("+ Добавить товар")
         self.btn_save = QPushButton("✅ Сохранить заказ")
         self.btn_cancel = QPushButton("❌ Отмена")
@@ -142,7 +138,7 @@ class OrderForm(QWidget):
                 self, "✅ Успех",
                 f"Заказ №{order.id} на сумму {order.total_amount:.2f} руб успешно создан!"
             )
-            self.saved.emit()  # Сигнал: заказ сохранён
+            self.saved.emit()
             self.close()
         except Exception as e:
             QMessageBox.critical(self, "❌ Ошибка", f"Не удалось сохранить заказ:\n{str(e)}")
@@ -150,4 +146,4 @@ class OrderForm(QWidget):
             try:
                 controller.close()
             except:
-                pass  # На случай, если контроллер не был создан
+                pass

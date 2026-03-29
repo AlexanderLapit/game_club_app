@@ -101,7 +101,7 @@ class CustomerForm(QDialog):
             cc.close()
             QMessageBox.information(self, "Готово", msg)
             if self.on_saved:
-                self.on_saved()  # Обновление таблицы
+                self.on_saved()
             self.accept()
         except Exception as e:
             QMessageBox.critical(self, "Ошибка", f"Не удалось сохранить: {e}")

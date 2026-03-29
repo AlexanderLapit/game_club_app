@@ -51,7 +51,6 @@ class UserManagement(QWidget):
                 self.user_table.setItem(row, 0, QTableWidgetItem(str(user.id)))
                 self.user_table.setItem(row, 1, QTableWidgetItem(user.username or ""))
 
-                # 🔐 Защита от None
                 level_name = user.access_level.name if user.access_level else "Не задан"
                 self.user_table.setItem(row, 2, QTableWidgetItem(level_name))
 

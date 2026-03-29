@@ -103,7 +103,7 @@ class ProductForm(QDialog):
             pc.close()
             QMessageBox.information(self, "Успех", "Товар успешно добавлен!")
             if self.on_saved:
-                self.on_saved()  # ← Перезагрузка таблицы
+                self.on_saved()
             self.accept()
         except Exception as e:
             import traceback

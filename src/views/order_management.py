@@ -4,7 +4,7 @@ from PyQt6.QtWidgets import (
 )
 from .order_form import OrderForm
 from controllers.order_controller import OrderController
-from models import Order  # Явный импорт модели
+from models import Order
 
 
 class EditOrderDialog(QDialog):
@@ -52,8 +52,6 @@ class OrderManagement(QWidget):
 
     def setup_ui(self):
         layout = QVBoxLayout()
-
-        # Кнопки управления
         btn_layout = QHBoxLayout()
 
         self.btn_add = QPushButton("➕ Создать заказ")
@@ -66,7 +64,6 @@ class OrderManagement(QWidget):
         btn_layout.addWidget(self.btn_refresh)
         layout.addLayout(btn_layout)
 
-        # Таблица заказов
         self.table = QTableWidget()
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels(["ID", "Клиент ID", "Дата", "Сумма", "Статус", "Действия"])
@@ -75,7 +72,6 @@ class OrderManagement(QWidget):
         self.table.setSortingEnabled(True)
         layout.addWidget(self.table)
 
-        # Кнопка удаления
         action_layout = QHBoxLayout()
         self.btn_delete = QPushButton("🗑️ Удалить заказ")
         self.btn_delete.setEnabled(False)
@@ -86,8 +82,6 @@ class OrderManagement(QWidget):
         layout.addLayout(action_layout)
 
         self.setLayout(layout)
-
-        # Событие выбора строки
         self.table.selectionModel().selectionChanged.connect(self.on_selection_changed)
 
     def create_order(self):
@@ -144,7 +138,6 @@ class OrderManagement(QWidget):
         """Редактирование статуса заказа."""
         controller = OrderController()
         try:
-            # ✅ Исправлено: используем controller.model (экземпляр), а не OrderController.model
             order = controller.db_session.query(controller.model).get(order_id)
             if not order:
                 QMessageBox.warning(self, "⚠️ Ошибка", "Заказ не найден.")
@@ -161,7 +154,6 @@ class OrderManagement(QWidget):
                     controller.db_session.rollback()
                     QMessageBox.critical(self, "❌ Ошибка", f"Не удалось сохранить изменения:\n{str(e)}")
         except Exception as e:
-            # Показываем реальную ошибку
             QMessageBox.critical(self, "❌ Ошибка", f"Ошибка при редактировании заказа:\n{str(e)}")
         finally:
             controller.close()
@@ -181,7 +173,6 @@ class OrderManagement(QWidget):
 
         controller = OrderController()
         try:
-            # ✅ Исправлено: используем controller.model
             order = controller.db_session.query(controller.model).get(self.selected_order_id)
             if not order:
                 QMessageBox.warning(self, "⚠️ Ошибка", "Заказ не найден.")

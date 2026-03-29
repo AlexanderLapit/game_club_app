@@ -45,10 +45,5 @@ game_club_app/
 ├── tests/                          # Тесты
 │   ├── test_models.py
 │   ├── test_controllers.py
-│   ├── test_views.py
-│   └── test_utils.py
 │
-├── docs/                           # Документация (может включать описание архитектуры, инструкции)
-│
-├── requirements.txt                # Зависимости
 └── README.md                       # Описание проекта

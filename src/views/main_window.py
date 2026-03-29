@@ -30,9 +30,6 @@ class MainWindow(QMainWindow):
         button_container = QVBoxLayout()
         button_container.setSpacing(15)
 
-        # ❌ Убрана кнопка "Создать заказ"
-        # Вместо этого — только управление заказами
-
         self.btn_order_mgmt = QPushButton("📋 Управление заказами")
         self.btn_order_mgmt.clicked.connect(self.open_order_management)
 

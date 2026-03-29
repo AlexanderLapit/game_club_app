@@ -1,10 +1,8 @@
-/* Основные стили */
 background-color: #f9f5eb;
 color: #4b3c27;
 border-radius: 10px;
 border: 1px solid #e0d6c2;
 
-/* Кнопки */
 QPushButton {
     background-color: #d4c8a5;
     color: #4b3c27;
@@ -20,7 +18,6 @@ QPushButton:pressed {
     background-color: #c0b490;
 }
 
-/* Поля ввода */
 QLineEdit, QSpinBox, QDoubleSpinBox {
     background-color: white;
     border: 1px solid #d0c4a8;
@@ -31,7 +28,6 @@ QLineEdit:focus, QSpinBox:focus, QDoubleSpinBox:focus {
     border: 1px solid #a89c7f;
 }
 
-/* Таблицы */
 QTableWidget {
     background-color: white;
     border: 1px solid #e0d6c2;
@@ -44,36 +40,30 @@ QHeaderView::section {
     border: none;
 }
 
-/* Виджеты */
 QWidget {
     background-color: #f9f5eb;
     font-family: "Segoe UI";
 }
 
-/* Метки */
 QLabel {
     color: #4b3c27;
     font-size: 13px;
 }
 
-/* Диалоговые окна */
 QDialog {
     background-color: #f9f5eb;
 }
 
-/* Главное окно */
 QMainWindow {
     background-color: #f9f5eb;
 }
 
-/* Кнопки с особым поведением */
 QPushButton:disabled {
     background-color: #cccccc;
     color: #666666;
     border: 1px solid #aaaaaa;
 }
 
-/* Специальные кнопки (удаление и т.д.) */
 QPushButton#delete_btn {
     background-color: #e5b8b7;
     color: #5e2c24;
@@ -82,7 +72,6 @@ QPushButton#delete_btn:hover {
     background-color: #ffcccc;
 }
 
-/* Формы — общие поля */
 QFormLayout > QLineEdit,
 QFormLayout > QComboBox,
 QFormLayout > QTextEdit {
@@ -92,12 +81,10 @@ QFormLayout > QTextEdit {
     padding: 4px;
 }
 
-/* Заголовки таблиц */
 QTableCornerButton::section {
     background-color: #e8e0d0;
 }
 
-/* Скроллбары (опционально) */
 QScrollBar:vertical {
     width: 12px;
     background: #f0ebe0;

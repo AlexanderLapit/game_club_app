@@ -12,7 +12,7 @@ class ProductController:
             description=description,
             price=price,
             stock_quantity=stock_quantity,
-            unit=unit  # ✅ Передаём unit
+            unit=unit
         )
         self.db_session.add(product)
         try:

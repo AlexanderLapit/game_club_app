@@ -5,7 +5,7 @@ from models import Order, Customer
 class OrderController:
     def __init__(self, session=None):
         self.db_session = session or SessionLocal()
-        self.model = Order  # ✅ Добавляем модель, чтобы использовать controller.model
+        self.model = Order
 
     def create_order(self, customer_id, items):
         """Создаёт новый заказ."""

@@ -15,7 +15,7 @@ class ProductManagement(QWidget):
     def setup_ui(self):
         layout = QVBoxLayout()
 
-        self.product_table = QTableWidget(0, 5)  # +1 колонка: Ед. изм.
+        self.product_table = QTableWidget(0, 5)
         self.product_table.setHorizontalHeaderLabels(["ID", "Название", "Цена", "На складе", "Ед."])
         self.product_table.horizontalHeader().setStretchLastSection(True)
         layout.addWidget(self.product_table)
