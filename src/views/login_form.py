@@ -70,7 +70,6 @@ class LoginForm(QWidget):
                     f"Файл капчи не найден:\n{CAPTCHA_PATH}\nЗагрузите captcha_full.png в папку images/"
                 )
                 return
-
             result = captcha_dialog.exec()
             if result != captcha_dialog.DialogCode.Accepted:
                 QMessageBox.information(self, "Капча", "Вы не прошли проверку капчи.")

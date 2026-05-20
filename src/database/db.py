@@ -20,5 +20,6 @@ def init_db():
     from models.access_levels import AccessLevel
     from models.customer import Customer
     from models.order import Order
+    from models.tournament import Tournament, TournamentParticipant, Match
 
     Base.metadata.create_all(bind=engine)

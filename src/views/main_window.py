@@ -49,11 +49,15 @@ class MainWindow(QMainWindow):
         self.btn_logout = QPushButton("🚪 Выйти")
         self.btn_logout.clicked.connect(self.handle_logout)
 
+        self.btn_tournaments = QPushButton("🏆 Турниры")
+        self.btn_tournaments.clicked.connect(self.open_tournaments)
+
         button_container.addWidget(self.btn_order_mgmt)
         button_container.addWidget(self.btn_customer_mgmt)
         button_container.addWidget(self.btn_user_mgmt)
         button_container.addWidget(self.btn_product_mgmt)
         button_container.addWidget(self.btn_logout)
+        button_container.addWidget(self.btn_tournaments)
         layout.addLayout(button_container)
         layout.addStretch()
 
@@ -85,3 +89,15 @@ class MainWindow(QMainWindow):
         if self.on_logout:
             self.on_logout()
         self.close()
+
+    def open_tournaments(self):
+        from .tournament_view import TournamentView
+
+        if self.current_user.access_level.name == "Администратор":
+            from .tournament_management import TournamentManagement
+            self.tournament_mgmt = TournamentManagement(self.current_user)
+            self.tournament_mgmt.show()
+        else:
+            self.tournament_view = TournamentView(current_user=self.current_user)
+            self.tournament_view.show()
+

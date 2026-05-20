@@ -12,4 +12,8 @@ class User(Base):
     access_level_id = Column(Integer, ForeignKey("access_levels.id"), nullable=False)
     is_active = Column(Boolean, default=True)
 
+    # Используем строковые ссылки для избежания циклических импортов
+    created_tournaments = relationship("Tournament", back_populates="creator")
+    tournament_participations = relationship("TournamentParticipant", back_populates="user")
+
     access_level = relationship("AccessLevel", back_populates="users")
